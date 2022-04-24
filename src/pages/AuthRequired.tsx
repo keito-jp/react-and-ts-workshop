@@ -3,6 +3,7 @@ import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
 import AppBar from "../components/AppBar";
+import { UserContext } from "../contexts/UserContext";
 import { auth } from "../fb";
 import { User } from "../models/user";
 
@@ -27,7 +28,7 @@ export default function RequiredLogin() {
     return () => unsubscribe();
   }, [navigate]);
   return (
-    <>
+    <UserContext.Provider value={user}>
       <AppBar />
       {user == null ? (
         <div
@@ -38,6 +39,6 @@ export default function RequiredLogin() {
       ) : (
         <Outlet />
       )}
-    </>
+    </UserContext.Provider>
   );
 }

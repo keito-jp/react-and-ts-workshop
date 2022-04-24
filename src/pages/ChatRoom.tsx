@@ -1,7 +1,8 @@
-import { Stack, List, ListItem, ListItemText } from "@mui/material";
+import { Stack, List, ListItem, ListItemText, Avatar, ListItemAvatar, Typography } from "@mui/material";
 import { onSnapshot, query, collection, orderBy } from "firebase/firestore";
 import { useState, useEffect, useRef } from "react";
 import CreateMessage from "../components/CreateMessage";
+import { useUser } from "../contexts/UserContext";
 import { db } from "../fb";
 import { Message } from "../models/message";
 
@@ -36,6 +37,7 @@ export default function ChatRoom() {
                 id: change.doc.id,
                 text: data.text,
                 createdAt: data.createdAt?.toDate() ?? new Date(),
+                author: data.author,
               };
               newIds.push(change.doc.id);
               break;
@@ -46,6 +48,7 @@ export default function ChatRoom() {
                 id: change.doc.id,
                 text: data.text,
                 createdAt: data.createdAt?.toDate() ?? new Date(),
+                author: data.author,
               };
               break;
             }
@@ -62,6 +65,10 @@ export default function ChatRoom() {
     );
     return () => unsubscribe();
   }, []);
+  const user = useUser();
+  if (user == null) {
+    return null;
+  }
   return (
     <Stack>
       <List sx={{ paddingBottom: "100px" }}>
@@ -72,16 +79,33 @@ export default function ChatRoom() {
           }
           return (
             <ListItem key={message.id} divider>
+              <ListItemAvatar>
+                <Avatar
+                  alt={message.author.displayName}
+                  src={message.author.photoURL ?? undefined}
+                />
+              </ListItemAvatar>
               <ListItemText
                 primary={message.text}
-                secondary={<span> {message.createdAt.toLocaleString()}</span>}
+                secondary={
+                  <>
+                    <Typography
+                      component="span"
+                      variant="body2"
+                      color="text.primary"
+                    >
+                      {message.author.displayName}
+                    </Typography>
+                    <span> {message.createdAt.toLocaleString()}</span>
+                  </>
+                }
               />
             </ListItem>
           );
         })}
       </List>
       <div ref={endRef} />
-      <CreateMessage />
+      <CreateMessage author={user} />
     </Stack>
   );
 }

@@ -3,12 +3,13 @@ import { ChangeEvent, FormEvent, useState } from "react";
 import { LoadingButton } from "@mui/lab";
 import { addDoc, collection, serverTimestamp } from "firebase/firestore";
 import { db } from "../fb";
+import { User } from "../models/user";
 
 interface Form {
   message: string;
 }
 
-export default function CreateMessage() {
+export default function CreateMessage({ author }: { author: User }) {
   const [isLoading, setLoading] = useState(false);
   const [formState, setFormState] = useState<Form>({
     message: "",
@@ -24,6 +25,7 @@ export default function CreateMessage() {
         await addDoc(collection(db, "messages"), {
           text: formState.message,
           createdAt: serverTimestamp(),
+          author,
         });
         setFormState({
           message: "",
