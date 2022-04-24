@@ -2,6 +2,7 @@ import { CircularProgress } from "@mui/material";
 import { onAuthStateChanged } from "firebase/auth";
 import { useEffect, useState } from "react";
 import { Outlet, useNavigate } from "react-router-dom";
+import AppBar from "../components/AppBar";
 import { auth } from "../fb";
 import { User } from "../models/user";
 
@@ -27,6 +28,7 @@ export default function RequiredLogin() {
   }, [navigate]);
   return (
     <>
+      <AppBar />
       {user == null ? (
         <div
           style={{ display: "flex", justifyContent: "center", padding: "1rem" }}
